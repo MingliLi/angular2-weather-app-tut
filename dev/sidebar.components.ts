@@ -1,4 +1,8 @@
-import {Component} from "angular2/core";
+import {Component, OnInit} from "angular2/core";
+import {Profile} from "./profile";
+import {ProfileService} from "./profile.service";
+import {WeatherItem} from "./weather/weather-item";
+import {WeatherService} from "./weather/weather.service";
 /**
  * Created by minglili on 1/16/17.
  */
@@ -7,15 +11,49 @@ import {Component} from "angular2/core";
     template: `
         <h3>Saved Profiles</h3>
         <button (click) = "onSaveNew()">Save List to Profile</button>
-        <article class="profile">
-            <h4>Profile Name</h4>
-            <p> Cities: New York, Changchun</p>
-            <span class="delete" (click)="onDeleteProfile($event)">X</span>
+        <article class="profile" *ngFor="#profile of profiles" (click)="onLoadProfile(profile)">
+            <h4>{{profile.profileName}}</h4>
+            <p> Cities: {{profile.cities.join(', ')}}</p>
+            <span class="delete" (click)="onDeleteProfile($event, profile)">X</span>
         </article>
     `,
-    styleUrls: ['src/css/sidebar.css']
+    styleUrls: ['src/css/sidebar.css'],
+    providers: [ProfileService]
 })
 
-export class SidebarComponent {
+export class SidebarComponent implements OnInit{
 
+    profiles: Profile[];
+
+    constructor(private _profileService: ProfileService, private _weatherService: WeatherService){}
+
+    onSaveNew(){
+        const cities = this._weatherService.getWeatherItems().map(function (elem: WeatherItem){
+            return elem.cityName;
+        });
+        this._profileService.saveNewProfile(cities);
+    }
+
+    ngOnInit(){
+        this.profiles = this._profileService.getProfiles();
+    }
+
+    onLoadProfile(profile: Profile){
+        this._weatherService.clearWeatherItems();
+        for(let i=0; i < profile.cities.length; i++){
+            this._weatherService.searchWeatherData(profile.cities[i])
+                .retry()
+                .subscribe(
+                    data => {
+                        const weatherItem = new WeatherItem(data.name, data.weather[0].description, data.main.temp,
+                            this._weatherService.getImageIconUrl(data.weather[0].icon));
+                        this._weatherService.addWeatherItem(weatherItem);
+                     }
+                );
+        }
+    }
+    onDeleteProfile (event: Event, profile: Profile){
+        event.stopPropagation();
+        this._profileService.deleteProfile(profile);
+    }
 }

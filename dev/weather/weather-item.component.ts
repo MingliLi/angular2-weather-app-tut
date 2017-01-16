@@ -11,6 +11,7 @@ import {WeatherItem} from "./weather-item";
             </div>
             <div class="col-2">
                 <span class="temperature">{{weatherItem.temperature}} °C</span>
+                <img [src]="weatherItem.icon">
             </div>
         </article>
     `,

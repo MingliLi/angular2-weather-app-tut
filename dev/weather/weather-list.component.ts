@@ -7,7 +7,10 @@ import {WeatherService} from "./weather.service";
     selector: 'weather-list',
     template: `
         <section class="weather-list">
-            <weather-item *ngFor="#weatherItem of weatherItems" [item]="weatherItem"></weather-item>
+        <div *ngFor="#weatherItem of weatherItems">
+         <weather-item [item]="weatherItem"></weather-item>
+         <p class="delete" (click)="onDeleteWeatherItem($event, weatherItem)">X</p>
+        </div>
         </section>
     `,
     directives: [WeatherItemComponent]
@@ -19,5 +22,9 @@ export class WeatherListComponent implements OnInit{
 
     ngOnInit():any{
         this.weatherItems = this._weatherService.getWeatherItems();
+    }
+    onDeleteWeatherItem (event: Event, weatherItem: WeatherItem){
+        event.stopPropagation();
+        this._weatherService.deleteWeatherItem(weatherItem);
     }
 }

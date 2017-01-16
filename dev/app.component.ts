@@ -7,7 +7,7 @@ import {SidebarComponent} from "./sidebar.components";
     selector: 'my-app',
     template: `
         <header>
-            <h1>Angular 2 Weather</h1>
+            <h1>Mingli&Yiyang Weather</h1>
         </header>
         <my-sidebar></my-sidebar>
         <my-weather-search></my-weather-search>

@@ -28,12 +28,13 @@ export class WeatherSearchComponent implements OnInit{
     private searchStream = new Subject<string>();
     data: any = {};
 
+
     constructor (private _weatherService: WeatherService) {}
     onSubmit(){
-        const weatherItem = new WeatherItem(this.data.name, this.data.weather[0].description, this.data.main.temp);
+        const weatherItem = new WeatherItem(this.data.name, this.data.weather[0].description, this.data.main.temp,
+            this._weatherService.getImageIconUrl(this.data.weather[0].icon));
         this._weatherService.addWeatherItem(weatherItem);
     }
-
 
     onSearchLocation(cityName: string){
         this.searchStream.next(cityName);
